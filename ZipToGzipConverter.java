@@ -69,7 +69,10 @@ public class ZipToGzipConverter {
         int eocd = -1;
         int maxSearch = Math.max(0, zip.length - 65557);
         for (int i = zip.length - 22; i >= maxSearch; i--) {
-            if (read32(zip, i) == 0x06054B50) { eocd = i; break; }
+            if (read32(zip, i) == 0x06054B50) {
+				eocd = i;
+				break;
+			}
         }
         if (eocd == -1) throw new IllegalArgumentException("Структура EOCD не найдена.");
 
