@@ -116,35 +116,4 @@ java ZipToGzipConverter.java input.zip output.gz
    jar cfm ZipToGzipConverter.jar manifest.txt ZipToGzipConverter.class
    ```
 
----
-
-## Запуск утилиты
-
 После успешной сборки в вашей папке появится файл `ZipToGzipConverter.jar`.
-
-### Синтаксис команды:
-```bash
-java -jar ZipToGzipConverter.jar <путь_к_zip> <путь_к_gzip>
-```
-
-### Примеры использования:
-
-* **Linux / macOS:**
-  ```bash
-  java -jar ZipToGzipConverter.jar /home/user/archive.zip /home/user/archive.gz
-  ```
-
-* **Windows:**
-  ```cmd
-  java -jar ZipToGzipConverter.jar C:\data\archive.zip C:\data\archive.gz
-  ```
-
----
-
-## Быстрый запуск без сборки (Java 11+)
-
-Если вам нужно разово запустить скрипт без создания `.class` и `.jar` файлов:
-
-```bash
-java ZipToGzipConverter.java archive.zip archive.gz
-```
