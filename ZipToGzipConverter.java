@@ -17,7 +17,9 @@ public class ZipToGzipConverter {
     }
 
     public static void convertSingleFileZipToGzip(String zipPath, String gzipPath) throws IOException {
-        if (!new File(zipPath).exists()) throw new IOException("Файл '" + zipPath + "' не найден");
+        if (!new File(zipPath).exists()) {
+            throw new IOException("Файл '" + zipPath + "' не найден");
+        }
         byte[] zipData = Files.readAllBytes(Paths.get(zipPath));
 
         if (zipData.length < 30 || read32(zipData, 0) != 0x04034B50) {
@@ -25,10 +27,18 @@ public class ZipToGzipConverter {
         }
 
         int flags = read16(zipData, 6);
-        if ((read16(zipData, 4) > 20)) throw new IOException("ZIP версия выше обычного DEFLATE");
-        if ((flags & 0x01) != 0) throw new IOException("ZIP использует шифрование");
-        if ((flags & 0x08) != 0) throw new IllegalArgumentException("ZIP использует Data Descriptor");
-        if (read16(zipData, 8) != 8) throw new IOException("Метод сжатия не поддерживается (ожидается DEFLATE)");
+        if (read16(zipData, 4) > 20) {
+            throw new IOException("ZIP версия выше обычного DEFLATE");
+        }
+        if ((flags & 0x01) != 0) {
+            throw new IOException("ZIP использует шифрование");
+        }
+        if ((flags & 0x08) != 0) {
+            throw new IllegalArgumentException("ZIP использует Data Descriptor");
+        }
+        if (read16(zipData, 8) != 8) {
+            throw new IOException("Метод сжатия не поддерживается (ожидается DEFLATE)");
+        }
 
         long localCrc = read32(zipData, 14);
         long localCompSize = read32(zipData, 18);
@@ -70,11 +80,13 @@ public class ZipToGzipConverter {
         int maxSearch = Math.max(0, zip.length - 65557);
         for (int i = zip.length - 22; i >= maxSearch; i--) {
             if (read32(zip, i) == 0x06054B50) {
-				eocd = i;
-				break;
-			}
+                eocd = i;
+                break;
+            }
         }
-        if (eocd == -1) throw new IllegalArgumentException("Структура EOCD не найдена.");
+        if (eocd == -1) {
+            throw new IllegalArgumentException("Структура EOCD не найдена.");
+        }
 
         if (read16(zip, eocd + 10) != 1 || read16(zip, eocd + 12) != 1) {
             throw new IllegalArgumentException("В архиве должен содержаться ровно 1 файл");
@@ -84,22 +96,28 @@ public class ZipToGzipConverter {
         long cdOffset = read32(zip, eocd + 18);
         int commentLen = read16(zip, eocd + 20);
 
-        if (eocd + 22 + commentLen > zip.length) throw new IllegalArgumentException("EOCD comment выходит за границы");
-        if (cdOffset + cdSize > eocd) throw new IllegalArgumentException("Центральный Каталог выходит за рамки структуры");
+        if (eocd + 22 + commentLen > zip.length) {
+            throw new IllegalArgumentException("EOCD comment выходит за границы");
+        }
+        if (cdOffset + cdSize > eocd) {
+            throw new IllegalArgumentException("Central Directory выходит за рамки структуры");
+        }
         
-        // Проверка границ Центрального Каталога перед чтением его полей
+        // Проверка границ Central Directory перед чтением его полей
         if (cdOffset + 46 > zip.length) {
-            throw new IllegalArgumentException("Центральный Каталог выходит за границы файла");
+            throw new IllegalArgumentException("Central Directory выходит за границы файла");
         }
 
         int cdIdx = (int) cdOffset;
-        if (read32(zip, cdIdx) != 0x02014B50) throw new IllegalArgumentException("Неверная сигнатура Центрального Каталога.");
+        if (read32(zip, cdIdx) != 0x02014B50) {
+            throw new IllegalArgumentException("Неверная сигнатура Central Directory.");
+        }
 
         int cdFilenameLen = read16(zip, cdIdx + 28);
         int cdExtraLen = read16(zip, cdIdx + 30);
         int cdCommentLen = read16(zip, cdIdx + 32);
 
-        // Проверка границ переменных полей Центрального Каталога
+        // Проверка границ переменных полей Central Directory
         if ((long) cdIdx + 46 + cdFilenameLen + cdExtraLen + cdCommentLen > zip.length) {
             throw new IllegalArgumentException("Переменные поля Central Directory выходят за границы файла");
         }
