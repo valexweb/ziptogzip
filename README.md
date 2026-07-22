@@ -115,12 +115,7 @@ java ZipToGzipConverter.java input.zip output.gz
    ```bash
    javac ZipToGzipConverter.java
    ```
-2. **Создайте файл `manifest.txt`** в той же папке и добавьте в него строчку (обратите внимание на пустую строку в конце):
-   ```text
-   Main-Class: ZipToGzipConverter
-
-   ```
-3. **Упакуйте проект в JAR:**
+2. **Упакуйте проект в JAR:**
    ```bash
    jar cfm ZipToGzipConverter.jar manifest.txt ZipToGzipConverter.class
    ```
