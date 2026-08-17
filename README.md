@@ -1,3 +1,4 @@
+[![Java CI with Maven](https://github.com/valexweb/ziptogzip/actions/workflows/maven.yml/badge.svg)](https://github.com/valexweb/ziptogzip/actions/workflows/maven.yml)
 # Инструкция по использованию
 
 Консольная утилита `ZipToGzipConverter` предназначена для преобразования однофайловых ZIP-архивов в формат GZIP без повторного сжатия данных.
